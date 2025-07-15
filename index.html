@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕌 مشغل القرآن الكريم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-mosque header-icon"></i>
+                <h1>مشغل القرآن الكريم</h1>
+            </div>
+            
+            <!-- قسم التاريخ ومواقيت الصلاة -->
+            <div class="datetime-prayer-section">
+                <div class="date-display">
+                    <div class="hijri-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="hijri-date">جاري التحميل...</span>
+                    </div>
+                    <div class="gregorian-date">
+                        <i class="fas fa-calendar"></i>
+                        <span id="gregorian-date">جاري التحميل...</span>
+                    </div>
+                </div>
+                <div class="prayer-time">
+                    <i class="fas fa-clock"></i>
+                    <span id="next-prayer">جاري التحميل...</span>
+                </div>
+            </div>
+            
+            <div class="theme-switcher">
+                <i class="fas fa-sun theme-icon"></i>
+                <input type="checkbox" id="theme-toggle">
+                <label for="theme-toggle" class="toggle-label">
+                    <div class="toggle-slider"></div>
+                </label>
+                <i class="fas fa-moon theme-icon"></i>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="filters-container">
+            <div class="filter-group">
+                <div class="filter-header">
+                    <i class="fas fa-filter"></i>
+                    <label for="riwaya-filter">اختر الرواية</label>
+                </div>
+                <div class="select-wrapper">
+                    <select id="riwaya-filter">
+                        <option value="">كل الروايات</option>
+                    </select>
+                    <i class="fas fa-chevron-down select-arrow"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-wrapper">
+            <div class="column">
+                <div class="section-header">
+                    <i class="fas fa-microphone"></i>
+                    <h2>القراء</h2>
+                    <span class="count-badge" id="reciters-count">0</span>
+                </div>
+                <div class="search-wrapper">
+                    <input type="text" id="reciter-search" placeholder="البحث في القراء...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="container" id="reciters-container">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        جاري تحميل القراء...
+                    </div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="section-header">
+                    <i class="fas fa-book-open"></i>
+                    <h2>السور</h2>
+                    <span class="count-badge" id="surahs-count">114</span>
+                </div>
+                <div class="search-wrapper">
+                    <input type="text" id="surah-search" placeholder="البحث في السور...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="container" id="surahs-container">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        جاري تحميل السور...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="player-container">
+            <div class="current-selection">
+                <div class="selection-item">
+                    <i class="fas fa-user"></i>
+                    <p>القارئ: <span id="current-reciter-label">لم يتم الاختيار</span></p>
+                </div>
+                <div class="selection-item">
+                    <i class="fas fa-book"></i>
+                    <p>السورة: <span id="current-surah-label">لم يتم الاختيار</span></p>
+                </div>
+            </div>
+
+            <!-- إعدادات التشغيل التلقائي -->
+            <div class="autoplay-settings">
+                <div class="setting-item">
+                    <label for="auto-next-surah">
+                        <input type="checkbox" id="auto-next-surah">
+                        <span class="checkmark"></span>
+                        <i class="fas fa-forward"></i>
+                        التنقل التلقائي بين السور
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label for="auto-next-reciter">
+                        <input type="checkbox" id="auto-next-reciter">
+                        <span class="checkmark"></span>
+                        <i class="fas fa-random"></i>
+                        التنقل التلقائي بين القراء
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label for="repeat-mode">
+                        <input type="checkbox" id="repeat-mode">
+                        <span class="checkmark"></span>
+                        <i class="fas fa-repeat"></i>
+                        إعادة التشغيل المستمر
+                    </label>
+                </div>
+            </div>
+
+            <div class="audio-section">
+                <audio id="audio-player" controls>
+                    متصفحك لا يدعم تشغيل الصوت
+                </audio>
+            </div>
+
+            <div class="action-buttons">
+                <div class="button-group">
+                    <button id="save-bookmark-btn" class="btn btn-primary">
+                        <i class="fas fa-bookmark"></i>
+                        حفظ الموضع
+                    </button>
+                    <button id="load-bookmark-btn" class="btn btn-secondary">
+                        <i class="fas fa-history"></i>
+                        عودة للموضع
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="download-surah-btn" class="btn btn-success">
+                        <i class="fas fa-download"></i>
+                        تحميل السورة
+                    </button>
+                    <button id="download-mushaf-btn" class="btn btn-info">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        تحميل المصحف
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- زر الانتقال إلى صفحة "حول الموقع" -->
+        <div class="navigation-section">
+            <button id="about-page-btn" class="btn btn-primary">
+                <i class="fas fa-info-circle"></i>
+                حول الموقع
+            </button>
+        </div>
+    </main>
+
+    <!-- صفحة "حول الموقع" -->
+    <div id="about-page" class="about-page hidden">
+        <div class="about-content">
+            <button id="close-about-btn" class="close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="about-header">
+                <i class="fas fa-heart"></i>
+                <h2>حول الموقع</h2>
+            </div>
+            
+            <div class="about-sections">
+                <div class="about-section">
+                    <h3><i class="fas fa-bullseye"></i> الهدف من الموقع</h3>
+                    <p>
+                        هذا الموقع هو عمل خير وصدقة جارية مُهداة إلى أرواح أجدادنا الكرام، 
+                        رحمهم الله تعالى، ولكل من يستفيد من هذا العمل. نسأل الله أن يتقبل 
+                        منا هذا العمل وأن يجعله في ميزان حسناتنا وحسنات والدينا وأجدادنا.
+                    </p>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-microphone"></i> مصادر التلاوات</h3>
+                    <ul>
+                        <li><strong>المصدر الرئيسي:</strong> موقع mp3quran.net</li>
+                        <li><strong>جودة الصوت:</strong> تلاوات عالية الجودة</li>
+                        <li><strong>القراء:</strong> نخبة من أشهر قراء القرآن الكريم</li>
+                        <li><strong>الروايات:</strong> مختلف الروايات المعتمدة</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-star"></i> المميزات</h3>
+                    <ul>
+                        <li>التشغيل التلقائي المستمر للسور والقراء</li>
+                        <li>دعم الوضع الليلي والنهاري</li>
+                        <li>تصميم متجاوب لجميع الأجهزة</li>
+                        <li>إمكانية تحميل التلاوات</li>
+                        <li>البحث في القراء والسور</li>
+                        <li>حفظ واسترجاع الموضع</li>
+                        <li>عرض التاريخ الهجري ومواقيت الصلاة</li>
+                        <li>اختصارات لوحة المفاتيح للتحكم السريع</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-code"></i> التقنيات المستخدمة</h3>
+                    <ul>
+                        <li><strong>HTML5:</strong> بنية الموقع</li>
+                        <li><strong>CSS3:</strong> التصميم والتنسيق</li>
+                        <li><strong>JavaScript:</strong> الوظائف التفاعلية</li>
+                        <li><strong>Aladhan API:</strong> التاريخ الهجري ومواقيت الصلاة</li>
+                        <li><strong>mp3quran.net API:</strong> مصدر التلاوات</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-keyboard"></i> اختصارات المفاتيح</h3>
+                    <ul>
+                        <li><strong>مسافة:</strong> تشغيل/إيقاف</li>
+                        <li><strong>→:</strong> تقديم 10 ثواني</li>
+                        <li><strong>←:</strong> تأخير 10 ثواني</li>
+                        <li><strong>↑:</strong> رفع الصوت</li>
+                        <li><strong>↓:</strong> خفض الصوت</li>
+                        <li><strong>n:</strong> السورة التالية</li>
+                        <li><strong>p:</strong> السورة السابقة</li>
+                        <li><strong>N:</strong> القارئ التالي</li>
+                        <li><strong>P:</strong> القارئ السابق</li>
+                        <li><strong>r:</strong> تبديل وضع الإعادة</li>
+                        <li><strong>a:</strong> تبديل التشغيل التلقائي</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-hands-helping"></i> دعاء</h3>
+                    <p class="prayer-text">
+                        اللهم اجعل هذا العمل خالصاً لوجهك الكريم، وتقبله منا صدقة جارية
+                        لأرواح أجدادنا وجميع المسلمين. اللهم انفع به كل من يستمع إليه،
+                        واجعله سبباً في هدايتهم وصلاحهم. آمين يا رب العالمين.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="dedication">
+                <p>
+                    <i class="fas fa-heart text-red"></i>
+                    هذا الموقع صدقة جارية عن أجدادي، وبرّ لوالديّ
+                    <i class="fas fa-heart text-red"></i>
+                </p>
+            </div>
+            <p>جميع الحقوق محفوظة &copy; 2025 - مشغل القرآن الكريم</p>
+            <p class="footer-note">
+                مصدر التلاوات: <span class="text-primary">mp3quran.net</span> |
+                التاريخ الهجري: <span class="text-primary">Aladhan API</span>
+            </p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

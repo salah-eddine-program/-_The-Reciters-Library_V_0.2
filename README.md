@@ -15,8 +15,11 @@
 
 ## 🎬 Demo / العرض التوضيحي
 
-[🔗 Live Demo]( https://salah-eddine-program.github.io/The-Reciters-Library_V_0.1/ )  
+[🔗 Live Demo]( https://salah-eddine-program.github.io/The-Reciters-Library_V_0.3/ )  
 ---
+
+
+هذا الموقع صدقة جارية عن أجدادي، وبرّ لوالديّ
 
 ## 🛠 Technologies / التقنيات
 
